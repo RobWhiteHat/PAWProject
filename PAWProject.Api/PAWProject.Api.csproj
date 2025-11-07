@@ -10,4 +10,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PAWProject.Architecture\PAWProject.Architecture.csproj" />
+    <ProjectReference Include="..\PAWProject.Core\PAWProject.Core.csproj" />
+    <ProjectReference Include="..\PAWProject.Models\PAWProject.Models.csproj" />
+  </ItemGroup>
+
 </Project>
