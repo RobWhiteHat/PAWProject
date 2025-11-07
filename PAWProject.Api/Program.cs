@@ -1,8 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using PAWProject.Architecture.Services;
+using PAWProject.Core.Interfaces;
+using PAWProject.Data.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddDbContext<Pawg3Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ISourceItemService, SourceItemService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
