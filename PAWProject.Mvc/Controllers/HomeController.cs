@@ -1,21 +1,35 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using PAW3CP1.Architecture;
+using PAW3CP1.Architecture.Providers;
+using PAWProject.Models.DTO.SpaceFlightDTOs;
 using PAWProject.Mvc.Models;
+using System.Configuration;
+using System.Diagnostics;
 
 namespace PAWProject.Mvc.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IRestProvider _restProvider;
+        private readonly IConfiguration _configuration;
+        private readonly string _apiBaseUrl;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, IRestProvider restProvider, IConfiguration configuration)
         {
             _logger = logger;
+            _restProvider = restProvider;
+            _configuration = configuration;
+            _apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7060/api";
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var endpoint = $"{_apiBaseUrl}/SpaceApi";
+            var response = await _restProvider.GetAsync(endpoint, null);
+            var spaceArticles = JsonProvider.DeserializeSimple<SpaceApiDTO>(response) ?? new SpaceApiDTO();
+            return View(spaceArticles);
         }
 
         public IActionResult Privacy()
