@@ -26,10 +26,17 @@ namespace PAWProject.Mvc.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var endpoint = $"{_apiBaseUrl}/SpaceApi";
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadArticles(int limit = 10, int offset = 0)
+        {
+            var endpoint = $"{_apiBaseUrl}/SpaceApi?limit={limit}&offset={offset}";
             var response = await _restProvider.GetAsync(endpoint, null);
-            var spaceArticles = JsonProvider.DeserializeSimple<SpaceApiDTO>(response) ?? new SpaceApiDTO();
-            return View(spaceArticles);
+            var articles = JsonProvider.DeserializeSimple<SpaceApiDTO>(response);
+
+            return Json(articles);
         }
 
         public IActionResult Privacy()
