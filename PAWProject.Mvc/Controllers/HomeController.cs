@@ -1,13 +1,15 @@
+using System.Configuration;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAW3CP1.Architecture;
 using PAW3CP1.Architecture.Providers;
 using PAWProject.Models.DTO.SpaceFlightDTOs;
 using PAWProject.Mvc.Models;
-using System.Configuration;
-using System.Diagnostics;
 
 namespace PAWProject.Mvc.Controllers
 {
+    [Authorize(Roles = "Admin,Cliente,User")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,7 +23,7 @@ namespace PAWProject.Mvc.Controllers
             _logger = logger;
             _restProvider = restProvider;
             _configuration = configuration;
-            _apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7060/api";
+            _apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7060/api/SpaceApi";
         }
 
         public async Task<IActionResult> Index()
