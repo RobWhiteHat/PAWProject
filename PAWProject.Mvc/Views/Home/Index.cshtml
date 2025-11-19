@@ -1,61 +1,16 @@
-﻿@model PAWProject.Models.DTO.SpaceFlightDTOs.SpaceApiDTO
+﻿@* @model PAWProject.Models.DTO.SpaceFlightDTOs.SpaceApiDTO *@
 @{
     ViewData["Title"] = "Noticias Espaciales 🛰️";
 }
 
 <div class="container py-4">
-    <h1 class="text-center mb-4">Últimas Noticias del Espacio</h1>
+    <h1 class="text-center mb-4">Últimas Noticias del Espacio 🛰️</h1>
 
-    @if (Model.Results == null || !Model.Results.Any())
-    {
-        <div class="alert alert-warning text-center">
-            No se encontraron artículos para mostrar.
-        </div>
-    }
-    else
-    {
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            @foreach (var article in Model.Results)
-            {
-                <div class="col">
-                    <div class="card h-100 shadow-sm border-0">
-                        <img src="@article.ImageUrl"
-                             class="card-img-top"
-                             alt="@article.Title"
-                             style="height:200px; object-fit:cover;">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-primary">@article.Title</h5>
-                            <p class="card-text text-muted small">
-                                @(article.Summary?.Length > 120 ? article.Summary.Substring(0, 120) + "..." : article.Summary)
-                            </p>
-                            <div class="mt-auto">
-                                <a href="@article.Url" target="_blank" class="btn btn-outline-primary btn-sm w-100">
-                                    Leer más →
-                                </a>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 text-end small text-secondary">
-                            @article.PublishedAt.ToLocalTime().ToString("dd/MM/yyyy")
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
+    <div id="articlesContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
 
-    <!-- Navegación simple si la API trae next/previous -->
-    <div class="d-flex justify-content-center mt-4">
-        @if (!string.IsNullOrEmpty(Model.Previous))
-        {
-            <a href="@Url.Action("Index", new { url = Model.Previous })" class="btn btn-outline-secondary me-2">
-                ← Anterior
-            </a>
-        }
-        @if (!string.IsNullOrEmpty(Model.Next))
-        {
-            <a href="@Url.Action("Index", new { url = Model.Next })" class="btn btn-outline-primary">
-                Siguiente →
-            </a>
-        }
+    <div id="loader" class="text-center my-3" style="display:none;">
+        <div class="spinner-border"></div>
     </div>
 </div>
+
+<script src="~/js/lazyloadingarticles.js"></script>

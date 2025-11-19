@@ -20,9 +20,9 @@ namespace PAWProject.Api.Controllers
 
         // GET: api/<SpaceApiController>
         [HttpGet]
-        public async Task<ActionResult<SpaceApiDTO>> GetAsync()
+        public async Task<ActionResult<SpaceApiDTO>> GetAsync([FromQuery] int limit = 10, [FromQuery] int offset = 0)
         {
-            var space = await _spaceService.GetDataAsync();
+            var space = await _spaceService.GetDataAsync(limit, offset);
 
             if (space == null)
                 return NotFound("No se encontraron artículos.");
