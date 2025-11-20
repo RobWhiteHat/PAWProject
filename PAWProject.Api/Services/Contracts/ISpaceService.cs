@@ -4,6 +4,6 @@ namespace PAWProject.Api.Services.Contracts
 {
     public interface ISpaceService
     {
-        Task<SpaceApiDTO> GetDataAsync();
+        Task<SpaceApiDTO> GetDataAsync(int limit, int offset);
     }
 }

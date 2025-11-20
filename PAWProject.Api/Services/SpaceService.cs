@@ -1,9 +1,7 @@
 ﻿using PAW3CP1.Architecture;
 using PAW3CP1.Architecture.Providers;
-using PAWProject.Api.Controllers;
 using PAWProject.Api.Services.Contracts;
 using PAWProject.Models.DTO.SpaceFlightDTOs;
-using static System.Net.WebRequestMethods;
 
 namespace PAWProject.Data
 {
@@ -12,11 +10,11 @@ namespace PAWProject.Data
         private string baseUrl = "https://api.spaceflightnewsapi.net/v4/articles/";
         //Documentation: https://api.spaceflightnewsapi.net/v4/docs/
 
-        public async Task<SpaceApiDTO> GetDataAsync()
+        public async Task<SpaceApiDTO> GetDataAsync(int limit = 10, int offset = 0)
         {
-            var response = await restProvider.GetAsync(baseUrl, null);
-            var data = await JsonProvider.DeserializeAsync<SpaceApiDTO>(response);
-            return data;
+            var url = $"{baseUrl}?limit={limit}&offset={offset}";
+            var response = await restProvider.GetAsync(url, null);
+            return await JsonProvider.DeserializeAsync<SpaceApiDTO>(response);
         }
     }
 }
