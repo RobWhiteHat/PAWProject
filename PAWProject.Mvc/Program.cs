@@ -10,7 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+
+
+
+
 
 //Configuracion de Roles
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -67,14 +71,14 @@ app.UseAuthorization();
 
 app.MapGet("/", async context =>
 {
-    // Si el usuario está autenticado, lo manda al Home
+    // Si el usuario estï¿½ autenticado, lo manda al Home
     if (context.User?.Identity != null && context.User.Identity.IsAuthenticated)
     {
         context.Response.Redirect("/Home/Index");
     }
     else
     {
-        // Si no está autenticado, lo manda al login
+        // Si no estï¿½ autenticado, lo manda al login
         context.Response.Redirect("/Identity/Account/Login");
     }
 
