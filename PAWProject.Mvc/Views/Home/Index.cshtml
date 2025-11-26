@@ -1,8 +1,16 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@* @model PAWProject.Models.DTO.SpaceFlightDTOs.SpaceApiDTO *@
+@{
+    ViewData["Title"] = "Noticias Espaciales 🛰️";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+    <h1 class="text-center mb-4">Últimas Noticias del Espacio 🛰️</h1>
+
+    <div id="articlesContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
+
+    <div id="loader" class="text-center my-3" style="display:none;">
+        <div class="spinner-border"></div>
+    </div>
 </div>
+
+<script src="~/js/lazyloadingarticles.js"></script>
