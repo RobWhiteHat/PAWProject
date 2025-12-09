@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PAWProject.Data.Models;
-
 using PAWProject.Core.Interfaces;
 
 namespace PAWProject.Architecture.Services
@@ -15,11 +13,27 @@ namespace PAWProject.Architecture.Services
             _context = context;
         }
 
+        public async Task<IEnumerable<SourceItem>> GetAllAsync()
+        {
+            // Devuelve todos los SourceItems ordenados por fecha de creación
+            return await _context.SourceItems
+                                 .OrderByDescending(s => s.CreatedAt)
+                                 .ToListAsync();
+        }
+
+        public async Task<SourceItem?> GetByIdAsync(int id)
+        {
+            // este Busca un SourceItem por su Id
+            return await _context.SourceItems.FindAsync(id);
+        }
+
         public async Task<bool> SaveItemAsync(SourceItem item)
         {
             try
             {
-                var sourceExists = await _context.Sources.AnyAsync(s => s.Id == item.SourceId);
+                if (item.SourceId == null) return false;
+
+                var sourceExists = await _context.Sources.AnyAsync(s => s.Id == item.SourceId.Value);
                 if (!sourceExists) return false;
 
                 item.CreatedAt = DateTime.UtcNow;
@@ -29,7 +43,6 @@ namespace PAWProject.Architecture.Services
             }
             catch (Exception ex)
             {
-                // test de que funcione todo
                 Console.WriteLine($"Error al guardar SourceItem: {ex.Message}");
                 return false;
             }
