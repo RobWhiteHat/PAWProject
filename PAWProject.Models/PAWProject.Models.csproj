@@ -12,4 +12,8 @@
     <None Remove="Entities\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PAWProject.Data\PAWProject.Data.csproj" />
+  </ItemGroup>
+
 </Project>
