@@ -1,0 +1,12 @@
+﻿@model PAWProject.Mvc.Controllers.SourceItemDtoForUi
+
+<h2>Detalle de noticia</h2>
+
+<p><strong>Id:</strong> @Model.Id</p>
+<p><strong>SourceId:</strong> @Model.SourceId</p>
+<p><strong>Fecha:</strong> @Model.CreatedAt</p>
+
+<h3>Contenido JSON</h3>
+<pre>@Model.Json</pre>
+
+<p><a asp-action="Index" class="btn btn-secondary">Volver a la lista</a></p>
