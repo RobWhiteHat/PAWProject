@@ -1,0 +1,338 @@
+﻿/* Fuente global */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #CACACA20; /* fondo gris claro suave */
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #00747C !important; /* color principal */
+}
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: white !important;
+        font-weight: 500;
+    }
+
+        .navbar .nav-link:hover {
+            color: #00BBC9 !important; /* color secundario al hover */
+        }
+
+/* Contenedor principal */
+.container {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px #87878755;
+}
+
+/* Footer */
+footer {
+    background-color: #00747C;
+    color: white !important;
+    padding: 15px 0;
+}
+
+    footer a {
+        color: #00BBC9;
+        font-weight: 500;
+    }
+
+/* Botones generales */
+.btn-primary {
+    background-color: #00747C;
+    border-color: #00747C;
+}
+
+    .btn-primary:hover {
+        background-color: #005f63;
+        border-color: #005f63;
+    }
+
+/* - partial (si aplica) */
+.navbar .btn-link {
+    color: white !important;
+}
+
+.app-footer {
+    background-color: #00747C;
+    color: white;
+    padding: 20px 0;
+    margin-top: 40px;
+    border: none;
+}
+
+    .app-footer a {
+        color: #00BBC9;
+        font-weight: 500;
+    }
+
+        .app-footer a:hover {
+            color: #CACACA;
+        }
+
+
+/* Tarjeta del login */
+.login-card {
+    background: #ffffff;
+    padding: 45px;
+    width: 450px; /* ✔ Aumentamos el tamaño */
+    border-radius: 12px; /* ✔ Curvatura más moderada */
+    box-shadow: 0 4px 25px #00000020;
+    border-top: 5px solid #00747C;
+}
+
+
+
+/* Íconos */
+.login-icon {
+    background-color: #00747C;
+    color: white;
+    border: none;
+}
+
+/* Inputs */
+.login-input {
+    border-left: none !important;
+}
+
+.input-group .form-control:focus {
+    border-color: #00BBC9;
+    box-shadow: 0 0 6px #00BBC980;
+}
+
+/* Botón */
+.login-btn {
+    background-color: #00747C;
+    border-color: #00747C;
+}
+
+    .login-btn:hover {
+        background-color: #005f63;
+        border-color: #005f63;
+    }
+
+/* Enlaces */
+.login-card a {
+    color: #00747C;
+    font-weight: 500;
+}
+
+    .login-card a:hover {
+        color: #00BBC9;
+    }
+
+
+/*Roles*/
+.roles-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.roles-card {
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .roles-card .card-header {
+        background-color: #00747C;
+        padding: 18px;
+    }
+
+.roles-table thead {
+    background-color: #00BBC9;
+    color: white;
+}
+
+.roles-table th {
+    font-weight: 600;
+}
+
+.roles-table tbody tr:hover {
+    background-color: #f2fafa;
+}
+
+.role-select {
+    min-width: 150px;
+}
+
+.btn-assign {
+    background-color: #00747C;
+    border: none;
+    color: white;
+    padding: 5px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+    .btn-assign:hover {
+        background-color: #005f63;
+    }
+
+.btn-remove {
+    background-color: #d9534f;
+    border: none;
+    color: white;
+    padding: 5px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+    .btn-remove:hover {
+        background-color: #c9302c;
+    }
+
+/*Quitar card vacia*/
+.main-container,
+.content-wrapper,
+.page-content,
+.global-wrapper {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/*Register*/
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* evita centrar vertical y elimina scroll */
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.register-card {
+    background: #ffffff;
+    padding: 35px 45px;
+    border-radius: 12px;
+    width: 430px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    border-top: 6px solid #006b73;
+}
+
+    .register-card h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-weight: 600;
+        color: #333;
+    }
+
+/*.input-icon {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    gap: 10px;
+    background-color: #fafafa;
+    transition: 0.2s;
+}
+
+    .input-icon:hover {
+        border-color: #0b848b;
+    }
+
+    .input-icon input, .input-icon select {
+        border: none !important;
+        outline: none !important;
+        flex-grow: 1;
+        background: none !important;
+        box-shadow: none !important;
+    }
+    */
+
+.form-links {
+    margin-top: 20px;
+    text-align: center;
+}
+
+    .form-links a {
+        color: #0b848b;
+        text-decoration: none;
+    }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+
+.btn-register {
+    background-color: #0b848b;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+    .btn-register:hover {
+        background-color: #096c72;
+    }
+
+.login-container,
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px; /* Ajusta la distancia desde arriba */
+    padding-bottom: 40px;
+}
+
+.login-card,
+.register-card {
+    margin-top: 0;
+}
+
+/*Change password*/
+
+.change-password-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.change-password-card {
+    background: #ffffff;
+    padding: 45px;
+    width: 450px;
+    border-radius: 12px;
+    box-shadow: 0 4px 25px #00000020;
+    border-top: 5px solid #00747C;
+}
+
+/*nav identity*/
+/* NAV lateral de Identity */
+.nav-pills .nav-link {
+    color: #333; /* texto normal */
+    border-radius: 8px;
+    margin-bottom: 6px;
+    transition: 0.2s;
+}
+
+    /* Hover en color turquesa */
+    .nav-pills .nav-link:hover {
+        background-color: #00747C;
+        color: #fff;
+    }
+
+    /* Cuando está activo (estás en la página) */
+    .nav-pills .nav-link.active {
+        background-color: #00747C !important;
+        color: #fff !important;
+    }
+
+    /* Opción: remover borde de enfoque */
+    .nav-pills .nav-link:focus {
+        box-shadow: none;
+    }

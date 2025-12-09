@@ -3,47 +3,70 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject UserManager<IdentityUser> UserManager
 
-<h2>Administrar Roles de Usuarios</h2>
+<div class="roles-container">
+    <div class="card roles-card shadow">
+        <div class="card-header text-white">
+            <h3 class="m-0">Administrar Roles de Usuarios</h3>
+        </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Roles actuales</th>
-            <th>Asignar Rol</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            var roles = await UserManager.GetRolesAsync(user);
-            <tr>
-                <td>@user.Email</td>
-                <td>@string.Join(", ", roles)</td>
-                <td>
-                    <form asp-action="AssignRole" method="post" class="d-inline">
-                        <input type="hidden" name="userId" value="@user.Id" />
-                        <select name="roleName" class="form-select form-select-sm" style="width:150px;display:inline-block;">
-                            @foreach (var role in RoleManager.Roles)
-                            {
-                                <option value="@role.Name">@role.Name</option>
-                            }
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-primary">Asignar</button>
-                    </form>
+        <div class="card-body">
+            <table class="table table-hover align-middle roles-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Roles actuales</th>
+                        <th>Asignar / Quitar Rol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        var roles = await UserManager.GetRolesAsync(user);
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>
+                                @if (roles.Any())
+                                {
+                                    <span class="badge bg-primary">@string.Join(", ", roles)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Sin roles</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
 
-                    <form asp-action="RemoveRole" method="post" class="d-inline">
-                        <input type="hidden" name="userId" value="@user.Id" />
-                        <select name="roleName" class="form-select form-select-sm" style="width:150px;display:inline-block;">
-                            @foreach (var role in roles)
-                            {
-                                <option value="@role">@role</option>
-                            }
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-danger">Quitar</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                                    <!-- Asignar Rol -->
+                                    <form asp-action="AssignRole" method="post" class="d-flex gap-2 align-items-center">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <select name="roleName" class="form-select form-select-sm role-select">
+                                            @foreach (var role in RoleManager.Roles)
+                                            {
+                                                <option value="@role.Name">@role.Name</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-assign">Asignar</button>
+                                    </form>
+
+                                    <!-- Quitar Rol -->
+                                    <form asp-action="RemoveRole" method="post" class="d-flex gap-2 align-items-center">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <select name="roleName" class="form-select form-select-sm role-select">
+                                            @foreach (var role in roles)
+                                            {
+                                                <option value="@role">@role</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-remove">Quitar</button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
