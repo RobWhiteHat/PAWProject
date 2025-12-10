@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PAWProject.Data\PAWProject.Data.csproj" />
+    <ProjectReference Include="..\PAWProject.Models\PAWProject.Models.csproj" />
   </ItemGroup>
 
 </Project>

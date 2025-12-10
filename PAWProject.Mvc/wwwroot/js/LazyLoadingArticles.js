@@ -25,7 +25,7 @@ async function loadArticles() {
                     </p>
 
                     <div class="d-flex gap-2 mt-auto">
-                        <button class="btn btn-success btn-sm" onclick='saveArticle(${JSON.stringify(a)})'>
+                       <button class="btn btn-success btn-sm" onclick='saveArticleCustom(${JSON.stringify(a)})'>
                             Descargar ⭐
                         </button>
 
@@ -46,25 +46,37 @@ async function loadArticles() {
 // Primera carga
 loadArticles();
 
-// Detectar scroll al final
+// Scroll infinito
 window.addEventListener("scroll", () => {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
         loadArticles();
     }
 });
-function saveArticle(article) {
 
-    const jsonString = JSON.stringify(article, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
+function saveArticleCustom(article) {
+
+    const filtered = {
+        url: article.url ?? "",
+        name: article.title ?? "",
+        description: article.summary ?? "",
+        componentType: "API",
+        requiresSecret: 0
+    };
+
+    const blob = new Blob([JSON.stringify(filtered, null, 4)], {
+        type: "application/json"
+    });
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
 
     a.href = url;
-    a.download = `${article.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "articulo"}.json`;
+    a.download = `${filtered.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
 
     document.body.appendChild(a);
     a.click();
-
     document.body.removeChild(a);
+
     URL.revokeObjectURL(url);
 }
+
