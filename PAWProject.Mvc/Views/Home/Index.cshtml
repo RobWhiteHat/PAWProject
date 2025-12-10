@@ -6,6 +6,57 @@
 <div class="container py-4">
     <h1 class="text-center mb-4">Últimas Noticias del Espacio 🛰️</h1>
 
+    @* Mensajes de feedback tras subir JSON *@
+    @if (TempData["UploadSuccess"] != null)
+    {
+        <div class="alert alert-success" role="alert">@TempData["UploadSuccess"]</div>
+    }
+    @if (TempData["UploadError"] != null)
+    {
+        <div class="alert alert-danger" role="alert">@TempData["UploadError"]</div>
+    }
+
+    @* Botón y modal de carga visibles solo para Admin *@
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                Cargar noticia (JSON)
+            </button>
+        </div>
+
+        @* Modal para subir archivo JSON *@
+        <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form asp-action="UploadJson" asp-controller="Home" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cargar noticia (JSON)</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">SourceId</label>
+                                <input name="sourceId" type="number" class="form-control" value="1" required />
+                                <div class="form-text">Usa el Id de la fuente (por defecto 1).</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Archivo JSON</label>
+                                <input name="jsonFile" type="file" accept=".json,application/json" class="form-control" required />
+                                <div class="form-text">Seleccione el archivo .json descargado (máx 5 MB).</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Subir</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
     <div id="articlesContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
 
     <div id="loader" class="text-center my-3" style="display:none;">
