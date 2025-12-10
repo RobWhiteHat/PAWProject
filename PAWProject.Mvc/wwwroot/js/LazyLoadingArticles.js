@@ -1,10 +1,9 @@
 ﻿let offset = 0;
 const limit = 9;
 let loading = false;
-let noMore = false;
 
 async function loadArticles() {
-    if (loading || noMore) return;
+    if (loading) return;
     loading = true;
 
     document.getElementById("loader").style.display = "block";
@@ -14,15 +13,8 @@ async function loadArticles() {
 
     const container = document.getElementById("articlesContainer");
 
-    // Si ya no hay más artículos → detener el scroll listener
-    if (!data.results || data.results.length === 0) {
-        noMore = true;
-        document.getElementById("loader").style.display = "none";
-        return;
-    }
-
     data.results.forEach(a => {
-        container.insertAdjacentHTML("beforeend", `
+        container.innerHTML += `
         <div class="col">
             <div class="card h-100 shadow-sm border-0">
                 <img src="${a.image_url}" class="card-img-top" style="height:200px; object-fit:cover;">
@@ -33,9 +25,8 @@ async function loadArticles() {
                     </p>
 
                     <div class="d-flex gap-2 mt-auto">
-                        <button class="btn btn-success btn-sm save-btn" 
-                                data-article='${btoa(JSON.stringify(a))}'>
-                            Descargar
+                       <button class="btn btn-success btn-sm" onclick='saveArticleCustom(${JSON.stringify(a)})'>
+                            Descargar ⭐
                         </button>
 
                         <a href="${a.url}" class="btn btn-outline-primary btn-sm" target="_blank">
@@ -44,8 +35,7 @@ async function loadArticles() {
                     </div>
                 </div>
             </div>
-        </div>
-        `);
+        </div>`;
     });
 
     offset += limit;
@@ -56,35 +46,37 @@ async function loadArticles() {
 // Primera carga
 loadArticles();
 
-// Scroll listener optimizado
-function onScroll() {
+// Scroll infinito
+window.addEventListener("scroll", () => {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
         loadArticles();
     }
-}
-window.addEventListener("scroll", onScroll);
-
-// Guardar artículos descargados
-document.addEventListener("click", e => {
-    if (e.target.classList.contains("save-btn")) {
-        const article = JSON.parse(atob(e.target.dataset.article));
-        saveArticle(article);
-    }
 });
 
-function saveArticle(article) {
-    const jsonString = JSON.stringify(article, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
+function saveArticleCustom(article) {
+
+    const filtered = {
+        url: article.url ?? "",
+        name: article.title ?? "",
+        description: article.summary ?? "",
+        componentType: "API",
+        requiresSecret: 0
+    };
+
+    const blob = new Blob([JSON.stringify(filtered, null, 4)], {
+        type: "application/json"
+    });
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
 
     a.href = url;
-    a.download = `${article.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "articulo"}.json`;
+    a.download = `${filtered.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
 
     document.body.appendChild(a);
     a.click();
-
     document.body.removeChild(a);
+
     URL.revokeObjectURL(url);
 }
+
