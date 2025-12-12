@@ -6,7 +6,7 @@
 <div class="container py-4">
     <h1 class="text-center mb-4">Últimas Noticias del Espacio 🛰️</h1>
 
-    @* Mensajes de feedback tras subir JSON *@
+    @* Mensajes de feedback para upload y creación de fuentes *@
     @if (TempData["UploadSuccess"] != null)
     {
         <div class="alert alert-success" role="alert">@TempData["UploadSuccess"]</div>
@@ -15,13 +15,25 @@
     {
         <div class="alert alert-danger" role="alert">@TempData["UploadError"]</div>
     }
+    @if (TempData["SourceSuccess"] != null)
+    {
+        <div class="alert alert-success" role="alert">@TempData["SourceSuccess"]</div>
+    }
+    @if (TempData["SourceError"] != null)
+    {
+        <div class="alert alert-danger" role="alert">@TempData["SourceError"]</div>
+    }
 
-    @* Botón y modal de carga visibles solo para Admin *@
+    @* Botón y modales solo visibles para Admin *@
     @if (User.IsInRole("Admin"))
     {
         <div class="mb-3">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
                 Cargar noticia (JSON)
+            </button>
+
+            <button class="btn btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#createSourceModal">
+                Agregar fuente
             </button>
         </div>
 
@@ -55,6 +67,51 @@
                 </form>
             </div>
         </div>
+
+        @* Modal para crear nueva fuente *@
+        <div class="modal fade" id="createSourceModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form asp-action="CreateSource" asp-controller="Admin" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Agregar Fuente</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input name="Name" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Url</label>
+                                <input name="Url" type="url" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="Description" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">ComponentType</label>
+                                <input name="ComponentType" class="form-control" value="REST" />
+                            </div>
+
+                            @* Hidden input para asegurar binding booleano cuando checkbox no está marcado *@
+                            <input type="hidden" name="RequiresSecret" value="false" />
+                            <div class="form-check">
+                                <input name="RequiresSecret" type="checkbox" class="form-check-input" id="requiresSecret" value="true" />
+                                <label class="form-check-label" for="requiresSecret">Requires Secret</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Crear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     }
 
     <div id="articlesContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
