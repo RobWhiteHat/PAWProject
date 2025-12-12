@@ -13,12 +13,22 @@ namespace PAWProject.Architecture.Services
             _context = context;
         }
 
+        public Task<Source> CreateSourceAsync(Source source)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<SourceItem>> GetAllAsync()
         {
             // Devuelve todos los SourceItems ordenados por fecha de creación
             return await _context.SourceItems
                                  .OrderByDescending(s => s.CreatedAt)
                                  .ToListAsync();
+        }
+
+        public Task<IEnumerable<Source>> GetArticlesFromDBAsync(int? id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<SourceItem?> GetByIdAsync(int id)
