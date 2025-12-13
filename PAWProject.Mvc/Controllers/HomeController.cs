@@ -1,15 +1,11 @@
-using System.Configuration;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAW3CP1.Architecture;
 using PAW3CP1.Architecture.Providers;
+using PAWProject.Data.Models;
 using PAWProject.Models.DTO.SpaceFlightDTOs;
 using PAWProject.Mvc.Models;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
 
 
 
@@ -25,8 +21,8 @@ namespace PAWProject.Mvc.Controllers
         private readonly IHttpClientFactory _httpFactory;
 
 
-      
-  public HomeController(ILogger<HomeController> logger,IRestProvider restProvider,IConfiguration configuration,IHttpClientFactory httpFactory)
+
+        public HomeController(ILogger<HomeController> logger, IRestProvider restProvider, IConfiguration configuration, IHttpClientFactory httpFactory)
         {
             _logger = logger;
             _restProvider = restProvider;
@@ -50,16 +46,16 @@ namespace PAWProject.Mvc.Controllers
             return Json(articles);
         }
 
-        public IActionResult Privacy()
+        [HttpGet]
+        public async Task<IActionResult> LoadDbArticles()
         {
-            return View();
+            var endpoint = $"{_apiBaseUrl}/Source";
+            var response = await _restProvider.GetAsync(endpoint, null);
+            var articlesDB = JsonProvider.DeserializeSimple <IEnumerable<SourceDTO>>(response);
+
+            return Json(articlesDB);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadJson(IFormFile jsonFile, int sourceId)
@@ -126,5 +122,18 @@ namespace PAWProject.Mvc.Controllers
 
             return RedirectToAction("Index");
         }
+
+        #region Others
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        #endregion
     }
 }

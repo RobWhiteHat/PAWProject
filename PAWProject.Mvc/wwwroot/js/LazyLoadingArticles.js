@@ -43,8 +43,45 @@ async function loadArticles() {
     document.getElementById("loader").style.display = "none";
 }
 
+async function loadDbArticles() {
+    const res = await fetch(`/Home/LoadDbArticles`);
+    const data = await res.json();
+
+    const container = document.getElementById("articlesContainer");
+
+    data.forEach(a => {
+        container.innerHTML += `
+        <div class="col">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-success mb-2">Base de datos</span>
+
+                    <h5 class="card-title text-success">${a.name}</h5>
+
+                    <p class="card-text small text-muted">
+                        ${a.description?.substring(0, 120) ?? ""}...
+                    </p>
+
+                    <div class="mt-auto">
+                        <button class="btn btn-success btn-sm" onclick='saveDbArticle(${JSON.stringify(a)})'>
+                            Descargar ⭐
+                        </button>
+                        <a href="${a.url}" class="btn btn-outline-success btn-sm" target="_blank">
+                            Leer más →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    });
+}
+
+
 // Primera carga
-loadArticles();
+(async () => {
+    await loadDbArticles();
+    loadArticles();
+})();
 
 // Scroll infinito
 window.addEventListener("scroll", () => {
@@ -79,4 +116,32 @@ function saveArticleCustom(article) {
 
     URL.revokeObjectURL(url);
 }
+
+function saveDbArticle(article) {
+
+    const filtered = {
+        url: article.url ?? "",
+        name: article.name ?? "",
+        description: article.description ?? "",
+        componentType: article.componentType ?? "DB",
+        requiresSecret: article.requiresSecret ?? false
+    };
+
+    const blob = new Blob([JSON.stringify(filtered, null, 4)], {
+        type: "application/json"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `${filtered.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+}
+
 
