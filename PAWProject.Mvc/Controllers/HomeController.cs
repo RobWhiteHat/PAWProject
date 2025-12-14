@@ -36,32 +36,55 @@ namespace PAWProject.Mvc.Controllers
             return View();
         }
 
+        #region PartialView Testing
+
         [HttpGet]
-        public async Task<IActionResult> LoadArticles(int limit = 10, int offset = 0)
+        public async Task<IActionResult> LoadArticlesPartial(int limit = 9, int offset = 0)
         {
             var endpoint = $"{_apiBaseUrl}/SpaceApi?limit={limit}&offset={offset}";
             var response = await _restProvider.GetAsync(endpoint, null);
             var articles = JsonProvider.DeserializeSimple<SpaceApiDTO>(response);
 
-            return Json(articles);
+            var vm = articles.Results.Select(a => new ArticleViewModel
+            {
+                Url = a.Url,
+                Title = a.Title,
+                Description = a.Summary.Length > 120
+                    ? a.Summary.Substring(0, 120) + "..."
+                    : a.Summary,
+                ImageUrl = a.ImageUrl,
+                ComponentType = "API",
+                RequiresSecret = false
+            });
+
+            return PartialView("_ArticleCard", vm);
         }
 
         [HttpGet]
-        public async Task<IActionResult> LoadDbArticles()
+        public async Task<IActionResult> LoadDbArticlesPartial()
         {
+
             var endpoint = $"{_apiBaseUrl}/Source";
             var response = await _restProvider.GetAsync(endpoint, null);
             var articlesDB = JsonProvider.DeserializeSimple<IEnumerable<SourceDTO>>(response);
 
-            bool isAdmin = User.IsInRole("Admin");
+            var vm = articlesDB.Select(s => new ArticleViewModel
+            {
+                Url = s.Url,
+                Title = s.Name,
+                Description = s.Description.Length > 120
+                    ? s.Description.Substring(0, 120) + "..."
+                    : s.Description,
+                ComponentType = s.ComponentType,
+                RequiresSecret = s.RequiresSecret
+            });
 
-            var filtered = isAdmin
-                ? articlesDB
-                : articlesDB.Where(a => !a.RequiresSecret);
-
-            return Json(filtered);
+            return PartialView("_DbArticleCard", vm);
         }
 
+        #endregion
+
+        #region Download/Upload/SaveToDB Article
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -149,6 +172,37 @@ namespace PAWProject.Mvc.Controllers
             }
         }
 
+        #endregion
+
+        #region Old Loading - JavaScript
+
+        [HttpGet]
+        public async Task<IActionResult> LoadArticles(int limit = 10, int offset = 0)
+        {
+            var endpoint = $"{_apiBaseUrl}/SpaceApi?limit={limit}&offset={offset}";
+            var response = await _restProvider.GetAsync(endpoint, null);
+            var articles = JsonProvider.DeserializeSimple<SpaceApiDTO>(response);
+
+            return Json(articles);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadDbArticles()
+        {
+            var endpoint = $"{_apiBaseUrl}/Source";
+            var response = await _restProvider.GetAsync(endpoint, null);
+            var articlesDB = JsonProvider.DeserializeSimple<IEnumerable<SourceDTO>>(response);
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            var filtered = isAdmin
+                ? articlesDB
+                : articlesDB.Where(a => !a.RequiresSecret);
+
+            return Json(filtered);
+        }
+
+        #endregion
 
         #region Others
         public IActionResult Privacy()
