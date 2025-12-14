@@ -51,11 +51,18 @@ namespace PAWProject.Mvc.Controllers
         {
             var endpoint = $"{_apiBaseUrl}/Source";
             var response = await _restProvider.GetAsync(endpoint, null);
-            var articlesDB = JsonProvider.DeserializeSimple <IEnumerable<SourceDTO>>(response);
+            var articlesDB = JsonProvider.DeserializeSimple<IEnumerable<SourceDTO>>(response);
 
-            return Json(articlesDB);
+            bool isAdmin = User.IsInRole("Admin");
+
+            var filtered = isAdmin
+                ? articlesDB
+                : articlesDB.Where(a => !a.RequiresSecret);
+
+            return Json(filtered);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadJson(IFormFile jsonFile, int sourceId)
@@ -122,6 +129,26 @@ namespace PAWProject.Mvc.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> SaveArticleToDb([FromBody] SourceDTO dto)
+        {
+            try
+            {
+                var endpoint = $"{_apiBaseUrl}/Source";
+                var json = JsonProvider.Serialize(dto);
+                var response = await _restProvider.PostAsync(endpoint, json);
+                TempData["UploadSuccess"] = "Fuente guardada con éxito";
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                TempData["UploadError"] = $"Error loading notifications: {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
         #region Others
         public IActionResult Privacy()

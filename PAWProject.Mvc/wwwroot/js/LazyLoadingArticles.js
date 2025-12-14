@@ -32,6 +32,11 @@ async function loadArticles() {
                         <a href="${a.url}" class="btn btn-outline-primary btn-sm" target="_blank">
                             Leer más →
                         </a>
+
+                        <button class="btn btn-outline-success btn-sm"
+                                onclick='saveArticleToDb(${JSON.stringify(a)}, this)'>
+                            Añadir a favorito
+                        </button>
                     </div>
                 </div>
             </div>
@@ -50,8 +55,8 @@ async function loadDbArticles() {
     const container = document.getElementById("articlesContainer");
 
     data.forEach(a => {
-        container.innerHTML += `
-        <div class="col">
+        container.insertAdjacentHTML("afterbegin", `
+        <div class="col db-article">
             <div class="card h-100 border-success shadow-sm">
                 <div class="card-body d-flex flex-column">
                     <span class="badge bg-success mb-2">Base de datos</span>
@@ -72,10 +77,62 @@ async function loadDbArticles() {
                     </div>
                 </div>
             </div>
-        </div>`;
+        </div>`);
     });
 }
 
+async function saveArticleToDb(article, button) {
+
+    if (button.disabled) return;
+
+    button.disabled = true;
+    button.innerText = "Guardando...";
+    button.classList.remove("btn-outline-success");
+    button.classList.add("btn-secondary");
+
+    const payload = {
+        url: article.url,
+        name: article.title,
+        description: article.summary,
+        componentType: "API",
+        requiresSecret: false
+    };
+
+    try {
+        const res = await fetch("/Home/SaveArticleToDb", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            throw new Error(await res.text());
+        }
+
+        button.innerText = "Añadido";
+        button.classList.remove("btn-secondary");
+        button.classList.add("btn-success");
+
+        await refreshDbArticles();
+    } catch (err) {
+        console.error(err);
+
+        button.disabled = false;
+        button.innerText = "Añadir a favorito";
+        button.classList.remove("btn-secondary");
+        button.classList.add("btn-outline-success");
+
+        alert("No se pudo guardar el artículo");
+    }
+}
+
+async function refreshDbArticles() {
+    document.querySelectorAll(".db-article").forEach(e => e.remove());
+    await loadDbArticles();
+    loadArticles();
+}
 
 // Primera carga
 (async () => {
@@ -96,7 +153,7 @@ function saveArticleCustom(article) {
         url: article.url ?? "",
         name: article.title ?? "",
         description: article.summary ?? "",
-        componentType: "API",
+        componentType: "DB",
         requiresSecret: 0
     };
 
