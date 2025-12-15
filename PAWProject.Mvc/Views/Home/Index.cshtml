@@ -43,7 +43,7 @@
         @* Modal para subir archivo JSON *@
         <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
-                <form asp-action="UploadJson" asp-controller="Home" method="post" enctype="multipart/form-data">
+                <form asp-action="UploadJson" asp-controller="Admin" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <div class="modal-content">
                         <div class="modal-header">
@@ -52,19 +52,14 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">SourceId</label>
-                                <input name="sourceId" type="number" class="form-control" value="1" required />
-                                <div class="form-text">Usa el Id de la fuente (por defecto 1).</div>
-                            </div>
-                            <div class="mb-3">
                                 <label class="form-label">Archivo JSON</label>
-                                <input name="jsonFile" type="file" accept=".json,application/json" class="form-control" required />
+                                <input name="jsonFile" id="jsonFile" type="file" accept=".json,application/json" class="form-control" required />
                                 <div class="form-text">Seleccione el archivo .json descargado (máx 5 MB).</div>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Subir</button>
+                            <button type="submit" class="btn btn-primary btn-carga-json" disabled>Subir</button>
                         </div>
                     </div>
                 </form>
@@ -83,27 +78,31 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">Name</label>
+                                <label class="form-label">Nombre</label>
                                 <input name="Name" class="form-control" required />
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Url</label>
+                                <label class="form-label">URL</label>
                                 <input name="Url" type="url" class="form-control" required />
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Description</label>
+                                <label class="form-label">Descripción</label>
                                 <textarea name="Description" class="form-control"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">ComponentType</label>
-                                <input name="ComponentType" class="form-control" value="REST" />
+                                <label class="form-label">Component Type</label>
+                                <select name="ComponentType" class="form-select" required>
+                                    <option value="REST" selected>REST</option>
+                                    <option value="API">API</option>
+                                    <option value="DB">DB</option>
+                                    <option value="WIDGET">Widget</option>
+                                </select>
                             </div>
 
-                            @* Hidden input para asegurar binding booleano cuando checkbox no está marcado *@
-                            <input type="hidden" name="RequiresSecret" value="false" />
+
                             <div class="form-check">
                                 <input name="RequiresSecret" type="checkbox" class="form-check-input" id="requiresSecret" value="true" />
-                                <label class="form-check-label" for="requiresSecret">Requires Secret</label>
+                                <label class="form-check-label" for="requiresSecret">Requires Secret?</label>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -126,4 +125,6 @@
 
 @section Scripts {
     <script src="~/js/lazyloadingarticles.js"></script>
+    <script src="~/js/sourcebuttons.js"></script>
+    <script src="~/js/site.js"></script>
 }

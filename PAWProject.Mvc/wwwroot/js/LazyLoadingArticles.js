@@ -19,7 +19,7 @@ async function loadArticles() {
     document.getElementById("loader").style.display = "none";
 }
 
-async function refreshDbArticles() {
+async function refreshArticles() {
     const container = document.getElementById("articlesContainer");
     container.innerHTML = "";
 
@@ -32,7 +32,7 @@ async function refreshDbArticles() {
 
 // Primera carga
 (async () => {
-    await refreshDbArticles();
+    await refreshArticles();
 })();
 
 // Scroll infinito

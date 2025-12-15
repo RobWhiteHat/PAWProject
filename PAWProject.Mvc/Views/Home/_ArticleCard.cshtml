@@ -15,12 +15,16 @@
                 <h5 class="card-title text-primary">@article.Title</h5>
 
                 <p class="card-text small text-muted">
-                    @article.Description
+                    @(string.IsNullOrEmpty(article.Description)
+                        ? ""
+                        : article.Description.Length > 120
+                        ? article.Description.Substring(0, 120) + "..."
+                        : article.Description)
                 </p>
 
                 <div class="d-flex gap-2 mt-auto">
                     @* Descargar *@
-                    <button class="btn btn-success btn-sm"
+                    <button class="btn btn-success btn-sm btn-download"
                             title="Descargar"
                             data-article='@Html.Raw(Json.Serialize(article))'>
                         <i class="bi bi-download"></i>
@@ -37,14 +41,13 @@
                     @if (User.IsInRole("Admin"))
                     {
                         @* Guardar en BD *@
-                        <button class="btn btn-outline-success btn-sm"
+                        <button class="btn btn-outline-success btn-sm btn-save-db"
                                 title="Añadir a favoritos"
                                 data-article='@Html.Raw(Json.Serialize(article))'>
                             <i class="bi bi-bookmark-plus"></i>
                         </button>
                     }
                 </div>
-
             </div>
         </div>
     </div>

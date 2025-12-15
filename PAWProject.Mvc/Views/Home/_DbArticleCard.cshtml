@@ -10,7 +10,11 @@
                 <h5 class="card-title text-success">@article.Title</h5>
 
                 <p class="card-text small text-muted">
-                    @article.Description
+                    @(string.IsNullOrEmpty(article.Description)
+                        ? ""
+                        : article.Description.Length > 120
+                        ? article.Description.Substring(0, 120) + "..."
+                        : article.Description)
                 </p>
 
                 <div class="mt-auto d-flex gap-2">

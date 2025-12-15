@@ -20,8 +20,6 @@ namespace PAWProject.Mvc.Controllers
         private readonly string _apiBaseUrl;
         private readonly IHttpClientFactory _httpFactory;
 
-
-
         public HomeController(ILogger<HomeController> logger, IRestProvider restProvider, IConfiguration configuration, IHttpClientFactory httpFactory)
         {
             _logger = logger;
@@ -36,7 +34,7 @@ namespace PAWProject.Mvc.Controllers
             return View();
         }
 
-        #region PartialView Testing
+        #region PartialView
 
         [HttpGet]
         public async Task<IActionResult> LoadArticlesPartial(int limit = 9, int offset = 0)
@@ -49,9 +47,7 @@ namespace PAWProject.Mvc.Controllers
             {
                 Url = a.Url,
                 Title = a.Title,
-                Description = a.Summary.Length > 120
-                    ? a.Summary.Substring(0, 120) + "..."
-                    : a.Summary,
+                Description = a.Summary,
                 ImageUrl = a.ImageUrl,
                 ComponentType = "API",
                 RequiresSecret = false
@@ -68,13 +64,17 @@ namespace PAWProject.Mvc.Controllers
             var response = await _restProvider.GetAsync(endpoint, null);
             var articlesDB = JsonProvider.DeserializeSimple<IEnumerable<SourceDTO>>(response);
 
-            var vm = articlesDB.Select(s => new ArticleViewModel
+            bool isAdmin = User.IsInRole("Admin");
+
+            var filtered = isAdmin
+                ? articlesDB
+                : articlesDB.Where(a => !a.RequiresSecret);
+
+            var vm = filtered.Select(s => new ArticleViewModel
             {
                 Url = s.Url,
                 Title = s.Name,
-                Description = s.Description.Length > 120
-                    ? s.Description.Substring(0, 120) + "..."
-                    : s.Description,
+                Description = s.Description,
                 ComponentType = s.ComponentType,
                 RequiresSecret = s.RequiresSecret
             });
@@ -84,76 +84,6 @@ namespace PAWProject.Mvc.Controllers
 
         #endregion
 
-        #region Download/Upload/SaveToDB Article
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadJson(IFormFile jsonFile, int sourceId)
-        {
-            if (jsonFile == null || jsonFile.Length == 0)
-            {
-                TempData["UploadError"] = "Seleccione un archivo JSON válido.";
-                return RedirectToAction("Index");
-            }
-
-            const long maxBytes = 5 * 1024 * 1024;
-            if (jsonFile.Length > maxBytes)
-            {
-                TempData["UploadError"] = "El archivo excede el tamaño máximo permitido (5 MB).";
-                return RedirectToAction("Index");
-            }
-
-            string jsonContent;
-            try
-            {
-                using var sr = new StreamReader(jsonFile.OpenReadStream());
-                jsonContent = await sr.ReadToEndAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error leyendo el archivo JSON subido");
-                TempData["UploadError"] = "No se pudo leer el archivo.";
-                return RedirectToAction("Index");
-            }
-
-            try
-            {
-                using var _ = System.Text.Json.JsonDocument.Parse(jsonContent);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "JSON inválido subido por el usuario");
-                TempData["UploadError"] = "El archivo no contiene JSON válido.";
-                return RedirectToAction("Index");
-            }
-
-            try
-            {
-                var client = _httpFactory.CreateClient();
-                client.BaseAddress = new Uri(_apiBaseUrl);
-
-                var payload = new { sourceId = sourceId, json = jsonContent };
-                var response = await client.PostAsJsonAsync("/api/sourceitems/upload", payload);
-
-                var respBody = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation("POST /api/sourceitems/upload -> {Status}", response.StatusCode);
-                _logger.LogDebug("POST /api/sourceitems/upload body: {Body}", respBody);
-
-                if (response.IsSuccessStatusCode)
-                    TempData["UploadSuccess"] = "Noticia cargada correctamente.";
-                else
-                    TempData["UploadError"] = $"Error al guardar: {response.StatusCode}";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error reenviando noticia al API");
-                TempData["UploadError"] = "Error interno al intentar guardar la noticia.";
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> SaveArticleToDb([FromBody] SourceDTO dto)
         {
@@ -172,10 +102,8 @@ namespace PAWProject.Mvc.Controllers
             }
         }
 
-        #endregion
-
         #region Old Loading - JavaScript
-
+        /*
         [HttpGet]
         public async Task<IActionResult> LoadArticles(int limit = 10, int offset = 0)
         {
@@ -200,7 +128,7 @@ namespace PAWProject.Mvc.Controllers
                 : articlesDB.Where(a => !a.RequiresSecret);
 
             return Json(filtered);
-        }
+        }*/
 
         #endregion
 
