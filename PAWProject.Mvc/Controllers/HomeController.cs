@@ -49,7 +49,7 @@ namespace PAWProject.Mvc.Controllers
                 Title = a.Title,
                 Description = a.Summary,
                 ImageUrl = a.ImageUrl,
-                ComponentType = "API",
+                ComponentType = "SpaceApi",
                 RequiresSecret = false
             });
 

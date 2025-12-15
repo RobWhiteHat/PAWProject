@@ -85,7 +85,7 @@ function downloadArticle(article) {
         url: article.url ?? "",
         name: article.title ?? "",
         description: article.description ?? "",
-        componentType: "DB",
+        componentType: article.componentType ?? "SpaceApi",
         requiresSecret: 0
     };
 
