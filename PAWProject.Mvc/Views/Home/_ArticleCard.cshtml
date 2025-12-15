@@ -1,0 +1,56 @@
+﻿@model IEnumerable<ArticleViewModel>
+
+@foreach (var article in Model)
+{
+    <div class="col article-item">
+        <div class="card h-100 shadow-sm border-0">
+            @if (!string.IsNullOrEmpty(article.ImageUrl))
+            {
+                <img src="@article.ImageUrl"
+                     class="card-img-top"
+                     style="height:200px; object-fit:cover;">
+            }
+
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary">@article.Title</h5>
+
+                <p class="card-text small text-muted">
+                    @(string.IsNullOrEmpty(article.Description)
+                        ? ""
+                        : article.Description.Length > 120
+                        ? article.Description.Substring(0, 120) + "..."
+                        : article.Description)
+                </p>
+
+                <div class="d-flex gap-2 mt-auto">
+                    @* Descargar *@
+                    <button class="btn btn-success btn-sm btn-download"
+                            title="Descargar"
+                            data-article='@Html.Raw(Json.Serialize(article))'>
+                        <i class="bi bi-download"></i>
+                    </button>
+
+                    @* Leer más *@
+                    <a href="@article.Url"
+                       class="btn btn-outline-primary btn-sm"
+                       target="_blank"
+                       title="Leer más">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @* Guardar en BD *@
+                        <button class="btn btn-outline-success btn-sm btn-save-db"
+                                title="Añadir a favoritos"
+                                data-article='@Html.Raw(Json.Serialize(article))'>
+                            <i class="bi bi-bookmark-plus"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
