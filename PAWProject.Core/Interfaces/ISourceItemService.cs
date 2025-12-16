@@ -23,5 +23,8 @@ namespace PAWProject.Core.Interfaces
         Task<IEnumerable<Source>> GetArticlesFromDBAsync(int? id);
                   
         Task<Source> CreateSourceAsync(Source source);
+
+       
+
     }
 }

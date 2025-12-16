@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using PAWProject.Data.Models;
+using PAWProject.Data.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using PAWProject.Data.Models;
-using PAWProject.Data.Repositories;
 
 namespace PAWProject.Core
 {
@@ -13,6 +14,8 @@ namespace PAWProject.Core
         Task<IEnumerable<Source>> GetArticlesFromDBAsync(int? id);
         Task<Source?> GetByIdAsync(int id);
         Task<Source> CreateSourceAsync(Source source);
+        Task<Source?> GetByUrlAsync(string url);
+
     }
 
     public class SourceService : ISourceService
@@ -107,6 +110,10 @@ namespace PAWProject.Core
             }
 
             throw new NotSupportedException("El método del repositorio devolvió un tipo no soportado. Adapta CreateSourceAsync al método real del repositorio.");
+        }
+        public async Task<Source?> GetByUrlAsync(string url)
+        {
+            return await _repositorySource.GetByUrlAsync(url);
         }
     }
 }

@@ -21,6 +21,7 @@ builder.Services.AddScoped<ISourceService, SourceService>();
 builder.Services.AddScoped<ISpaceService, SpaceService>();
 builder.Services.AddScoped<IRepositorySource, RepositorySource>();
 builder.Services.AddScoped<IRestProvider, RestProvider>();
+builder.Services.AddScoped<ISourceService, SourceService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

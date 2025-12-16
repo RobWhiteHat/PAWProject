@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAWProject.Api.Models.DTO;
+using PAWProject.Core;
 using PAWProject.Core.Interfaces;
 using PAWProject.Data.Models;
 using System.Text.Json;
@@ -13,13 +14,19 @@ namespace PAWProject.API.Controllers
     public class SourceItemsController : ControllerBase
     {
         private readonly ISourceItemService _service;
+        private readonly ISourceService _sourceService;
         private readonly ILogger<SourceItemsController> _logger;
 
-        public SourceItemsController(ISourceItemService service, ILogger<SourceItemsController> logger)
+        public SourceItemsController(
+            ISourceItemService service,
+            ISourceService sourceService,
+            ILogger<SourceItemsController> logger)
         {
             _service = service;
+            _sourceService = sourceService;
             _logger = logger;
         }
+
 
         // POST api/sourceitems/upload
         [HttpPost("upload")]
@@ -68,6 +75,74 @@ namespace PAWProject.API.Controllers
             var item = await _service.GetByIdAsync(id);
             if (item == null) return NotFound();
             return Ok(item);
+        }
+        // POST api/sourceitems/upload-auto
+        [HttpPost("upload-auto")]
+        public async Task<IActionResult> UploadAuto([FromBody] JsonUploadDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Json))
+                return BadRequest("JSON vacío");
+
+            // 1. Validar que el JSON sea válido
+            try { JsonDocument.Parse(dto.Json); }
+            catch { return BadRequest("JSON inválido"); }
+
+            // 2. Deserializar el JSON a un DTO que representa una Source
+            SourceFromJsonDto sourceDto;
+            try
+            {
+                sourceDto = JsonSerializer.Deserialize<SourceFromJsonDto>(
+                    dto.Json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
+            }
+            catch
+            {
+                return BadRequest("El JSON no coincide con el formato esperado.");
+            }
+
+
+            // 3. Buscar si ya existe una fuente con la misma URL
+            var existing = await _sourceService.GetByUrlAsync(sourceDto.Url);
+
+            Source source;
+            if (existing != null)
+            {
+                source = existing;
+            }
+            else
+            {
+                // 4. Crear una nueva fuente automáticamente
+                source = new Source
+                {
+                    Url = sourceDto.Url,
+                    Name = sourceDto.Name,
+                    Description = sourceDto.Description,
+                    ComponentType = sourceDto.ComponentType,
+                    RequiresSecret = sourceDto.RequiresSecret == 1
+                };
+
+                await _sourceService.CreateSourceAsync(source);
+            }
+
+            // 5. Crear el SourceItem asociado a esa fuente
+            var item = new SourceItem
+            {
+                SourceId = source.Id,
+                Json = dto.Json,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var success = await _service.SaveItemAsync(item);
+            if (!success)
+                return StatusCode(500, "No se pudo guardar el SourceItem");
+
+            return Created("", new
+            {
+                message = "Source y SourceItem creados correctamente",
+                sourceId = source.Id,
+                itemId = item.Id
+            });
         }
     }
 }

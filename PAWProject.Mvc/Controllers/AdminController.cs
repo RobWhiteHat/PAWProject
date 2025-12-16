@@ -122,8 +122,8 @@ namespace PAWProject.Mvc.Controllers
                 var client = _httpFactory.CreateClient();
                 client.BaseAddress = new Uri(_apiBaseUrl);
 
-                var payload = new { sourceId = sourceId, json = jsonContent };
-                var response = await client.PostAsJsonAsync("/api/sourceitems/upload", payload);
+                var payload = new { json = jsonContent };
+                var response = await client.PostAsJsonAsync("/api/sourceitems/upload-auto", payload);
 
                 var respBody = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation("POST /api/sourceitems/upload -> {Status}", response.StatusCode);
@@ -140,7 +140,7 @@ namespace PAWProject.Mvc.Controllers
                 TempData["UploadError"] = "Error interno al intentar guardar la noticia.";
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index","Home");
         }
 
         #endregion
