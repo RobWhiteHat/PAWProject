@@ -20,5 +20,11 @@ namespace PAWProject.Core.Interfaces
         /// Devuelve un SourceItem por su Id, o null si no existe.
         /// </summary>
         Task<SourceItem?> GetByIdAsync(int id);
+        Task<IEnumerable<Source>> GetArticlesFromDBAsync(int? id);
+                  
+        Task<Source> CreateSourceAsync(Source source);
+
+       
+
     }
 }

@@ -8,43 +8,32 @@ async function loadArticles() {
 
     document.getElementById("loader").style.display = "block";
 
-    const res = await fetch(`/Home/LoadArticles?limit=${limit}&offset=${offset}`);
-    const data = await res.json();
+    const res = await fetch(`/Home/LoadArticlesPartial?limit=${limit}&offset=${offset}`);
+    const html = await res.text();
 
-    const container = document.getElementById("articlesContainer");
-
-    data.results.forEach(a => {
-        container.innerHTML += `
-        <div class="col">
-            <div class="card h-100 shadow-sm border-0">
-                <img src="${a.image_url}" class="card-img-top" style="height:200px; object-fit:cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-primary">${a.title}</h5>
-                    <p class="card-text small text-muted">
-                        ${a.summary.substring(0, 120)}...
-                    </p>
-
-                    <div class="d-flex gap-2 mt-auto">
-                       <button class="btn btn-success btn-sm" onclick='saveArticleCustom(${JSON.stringify(a)})'>
-                            Descargar ⭐
-                        </button>
-
-                        <a href="${a.url}" class="btn btn-outline-primary btn-sm" target="_blank">
-                            Leer más →
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    });
+    document.getElementById("articlesContainer")
+        .insertAdjacentHTML("beforeend", html);
 
     offset += limit;
     loading = false;
     document.getElementById("loader").style.display = "none";
 }
 
+async function refreshArticles() {
+    const container = document.getElementById("articlesContainer");
+    container.innerHTML = "";
+
+    const dbHtml = await fetch("/Home/LoadDbArticlesPartial").then(r => r.text());
+    container.insertAdjacentHTML("beforeend", dbHtml);
+
+    offset = 0;
+    loadArticles();
+}
+
 // Primera carga
-loadArticles();
+(async () => {
+    await refreshArticles();
+})();
 
 // Scroll infinito
 window.addEventListener("scroll", () => {
@@ -52,31 +41,3 @@ window.addEventListener("scroll", () => {
         loadArticles();
     }
 });
-
-function saveArticleCustom(article) {
-
-    const filtered = {
-        url: article.url ?? "",
-        name: article.title ?? "",
-        description: article.summary ?? "",
-        componentType: "API",
-        requiresSecret: 0
-    };
-
-    const blob = new Blob([JSON.stringify(filtered, null, 4)], {
-        type: "application/json"
-    });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = `${filtered.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    URL.revokeObjectURL(url);
-}
-

@@ -27,7 +27,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, NoOpEmailSender>();
-
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IRestProvider, RestProvider>();
 
 var app = builder.Build();
